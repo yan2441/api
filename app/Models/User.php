@@ -20,6 +20,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'CIN',
+        'CNE',
+        'date_naissance',
     ];
 
     /**
