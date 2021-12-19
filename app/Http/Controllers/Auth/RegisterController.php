@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Student;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -23,6 +24,7 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
+
 
     /**
      * Where to redirect users after registration.
@@ -54,8 +56,8 @@ class RegisterController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'CIN' => ['required', 'string', 'unique:users'],
-            'CNE' => ['required', 'string', 'exists:users'],
-            'date_naissance' => ['date_equals:date_naissance', 'required', 'string', 'exists:users,date_naissance,CNE,' . $data['CNE']],
+            'CNE' => ['required', 'string', 'exists:students,CNE'],
+            'date_naissance' => ['date_equals:date_naissance', 'required', 'string', 'exists:students,date_naissance,CNE,' . $data['CNE']],
         ]);
     }
 
@@ -67,15 +69,19 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        User::where('CNE', $data['CNE'])
-            ->first()
-            ->update([
+        if (Student::where('CNE', $data['CNE'])->where('hasUser', '=', 0)->exists()) {
+
+            Student::where('CNE', $data['CNE'])->first()->update(['hasUser' => true]);
+
+            return User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
+                'student_CNE_id' => Student::where('CNE', $data['CNE'])->first()->id,
                 'CIN' => $data['CIN'],
-                'date_naissance' => $data['date_naissance'],
             ]);
-        return User::where('CNE', $data['CNE'])->first();
+        } else {
+            return redirect()->back()->with('error', 'CNE invalide');
+        }
     }
 }

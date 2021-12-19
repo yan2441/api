@@ -12,6 +12,7 @@ class Student extends Model
     protected $fillable = [
         'CNE',
         'date_naissance',
+        'hasUser',
     ];
 
     public function user()

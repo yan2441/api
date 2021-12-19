@@ -20,8 +20,14 @@ class User extends Authenticatable
         'name',
         'email',
         'CIN',
+        'password',
         'student_CIN_id'
     ];
+
+    public function student()
+    {
+        return $this->hasOne('App\Models\Student', 'student_CIN_id');
+    }
 
     /**
      * The attributes that should be hidden for arrays.

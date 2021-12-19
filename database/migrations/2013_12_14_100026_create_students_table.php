@@ -17,6 +17,7 @@ class CreateStudentsTable extends Migration
             $table->id();
             $table->string('CNE', 15)->unique();
             $table->date('date_naissance');
+            $table->boolean('hasUser')->default(false);
             $table->timestamps();
         });
     }
